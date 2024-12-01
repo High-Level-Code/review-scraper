@@ -1,0 +1,13 @@
+version: '3.8'  # Specify the Docker Compose file format version
+
+services:
+  postgres:
+    image: postgres  # Use the official PostgreSQL image
+    container_name: postgres_db  # Name of the PostgreSQL container
+    restart: always  # Automatically restart the container if it stops
+    environment:
+      POSTGRES_USER: admin  # Set a custom PostgreSQL user
+      POSTGRES_PASSWORD: admin  # Set the user's password
+      POSTGRES_DB: db  # Set the default database name
+    ports:
+      - 5432:5432  # Expose PostgreSQL on the default port 5432
