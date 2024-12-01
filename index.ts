@@ -22,6 +22,11 @@ let reviews: any[] = [];
   const page = await browser.newPage();
 
   await page.goto(REVIEWS_LINK, { waitUntil: 'load' });
+
+  const n = await page.$eval('a[data-async-trigger="reviewDialog"] > span', (el: any) => (el as HTMLSpanElement).innerText);
+  const n_match = (n as string).match(/\d+/)
+  const N_REVIEWS = Number(n_match![0]);
+
   const reviewsModal = await page.waitForSelector('a[data-async-trigger="reviewDialog"]')!;
   reviewsModal?.click();
   reviewsModal?.dispose();
@@ -31,13 +36,18 @@ let reviews: any[] = [];
   recents?.click();
   recents?.dispose();
 
-  const N_REVIEWS = 204;
-
   await delay(3000);
 
+  const reviewsFromDBCount = await prisma.review.count();
+  console.log(reviewsFromDBCount, N_REVIEWS);
+  if (reviewsFromDBCount && reviewsFromDBCount >= N_REVIEWS) {
+    await browser.close();
+    return console.error("there is no new reviews");
+  }
   
   let reviewsElements: any | null;
-  console.log("rendering all reviews for scraping...");
+  console.log(`rendering all ${N_REVIEWS} reviews for scraping...`);
+
   while (true) {
     await page.evaluate(() => {
       const divEl = document.querySelector(".review-dialog-list")!;
