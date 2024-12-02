@@ -9,13 +9,12 @@ const REVIEWS_LINK = "https://www.google.com/search?sca_esv=ff698a007cca6e58&rlz
 
 function delay(ms: number){ return new Promise(resolve => setTimeout(resolve, ms)) };
 
-
 let reviews: any[] = [];
 
-(async () => {
+async function scrapeReviews() {
 
   const browser = await puppeteer.launch({ 
-    headless: false, 
+    headless: true, 
     defaultViewport: null,
     args: ['--disable-translate', '--lang=en-US', "--start-maximized"], });
 
@@ -39,11 +38,13 @@ let reviews: any[] = [];
   await delay(3000);
 
   const reviewsFromDBCount = await prisma.review.count();
-  console.log(reviewsFromDBCount, N_REVIEWS);
+  console.log("reviews from db: ", reviewsFromDBCount, " reviews in the page: ", N_REVIEWS);
+
   if (reviewsFromDBCount && reviewsFromDBCount >= N_REVIEWS) {
     await browser.close();
     return console.error("there is no new reviews");
   }
+
   
   let reviewsElements: any | null;
   console.log(`rendering all ${N_REVIEWS} reviews for scraping...`);
@@ -77,9 +78,23 @@ let reviews: any[] = [];
       return null; // No second element
     });
 
+    const photosAttached = await element.$$eval(".acCJ4b > div > div > a > div", (els: any[]) => {
+
+      return els.map(((el: HTMLDivElement) => {
+        const computedStyle = getComputedStyle(el);
+        const bgImage = computedStyle.backgroundImage;
+        const urlMatch = bgImage.match(/url\(["']?(.*?)["']?\)/)
+        return urlMatch && urlMatch[1];
+        
+      }));
+
+    }).catch(() => null);
+
     const review = {
-      uniqueProfileURL, profilePicture, name, ratingNumber, comment
+      uniqueProfileURL, profilePicture, name, ratingNumber, comment,
+      photosAttached: photosAttached
     }
+
     console.log(review);
     reviews.push(review);
   }
@@ -100,15 +115,32 @@ let reviews: any[] = [];
 
   if (lastReviewFromDB && lastReviewFromDB.comment === reviews[0].comment) return console.error("no new reviews");
 
-  await prisma.review.createMany({
-    data: reviews,
-    skipDuplicates: true,
-  })
+  const reviewPromises = reviews.map((review: any) => {
+    
+    const { name, uniqueProfileURL, profilePicture, comment, photosAttached, ratingNumber } = review;
+
+    const photos = photosAttached.map((x: any) => { return {url: x} });
+
+    return prisma.review.create({
+      data: {
+        name, uniqueProfileURL, profilePicture, comment, ratingNumber,
+        photosAttached: {
+          create: photos
+        }
+      } 
+    })
+  });
+
+  await prisma.$transaction(reviewPromises);
 
   console.log("reviews stored successfully");
-
   await prisma.$disconnect();
 
+};
 
-})();
+try {
+  scrapeReviews()
+} catch (error) {
+  console.error(error);
+}
 

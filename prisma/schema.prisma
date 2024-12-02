@@ -22,6 +22,19 @@ model Review {
   ratingNumber Int
   comment String?
 
+  photosAttached ReviewAttachedPhoto[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model ReviewAttachedPhoto {
+  id String @id @default(cuid())
+  reviewId String?
+  url String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  review Review? @relation(fields: [reviewId], references: [id])
 }
