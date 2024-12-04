@@ -1,10 +1,12 @@
 {
+  "scripts": {
+    "start": "tsx index.ts"
+  },
   "dependencies": {
     "@prisma/client": "^6.0.0",
+    "@sparticuz/chromium": "^131.0.1",
     "dotenv": "^16.4.5",
-    "puppeteer": "^23.9.0"
-  },
-  "devDependencies": {
-    "prisma": "^6.0.0"
+    "prisma": "^6.0.1",
+    "puppeteer-core": "^23.10.0"
   }
 }

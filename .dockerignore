@@ -1,0 +1,9 @@
+makefile
+.env
+.git/
+node_modules/
+Dockerfile
+docker-compose.yaml
+package-lock.json
+screenshot.png
+tsconfig.json

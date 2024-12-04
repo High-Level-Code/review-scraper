@@ -1,5 +1,6 @@
 import * as dotenv from "dotenv";
-import puppeteer from "puppeteer";
+import puppeteer from "puppeteer-core";
+import chromium from "@sparticuz/chromium";
 import prisma from "./prisma/prisma";
 
 dotenv.config();
@@ -14,9 +15,11 @@ let reviews: any[] = [];
 async function scrapeReviews() {
 
   const browser = await puppeteer.launch({ 
-    headless: true, 
-    defaultViewport: null,
-    args: ['--disable-translate', '--lang=en-US', "--start-maximized"], });
+    headless: chromium.headless, 
+    defaultViewport: chromium.defaultViewport,
+    args: chromium.args,
+    executablePath: await chromium.executablePath()
+  });
 
   const page = await browser.newPage();
 
