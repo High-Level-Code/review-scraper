@@ -139,6 +139,21 @@ async function scrapeReviews() {
   console.log("reviews stored successfully");
   await prisma.$disconnect();
 
+  const cronjob_key = process.env.CRONJOB_KEY;
+  if (!cronjob_key) return console.log("cronjob key not found");
+
+  console.log("> Calling extra endpoint");
+  const req = await fetch("https://davidsgarage.pro/api/", {
+    method: "POST", 
+    headers: {
+      "Authorization": `Bearer ${cronjob_key}`
+    },
+    body: JSON.stringify({message: "sup bro!"})
+  });
+  const res = await req.json();
+  if (res.error) return console.error(res.error);
+  console.log("Success: ", res.data);
+ 
 };
 
 try {
