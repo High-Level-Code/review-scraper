@@ -28,12 +28,12 @@ RUN apt-get update && apt-get install -y \
 # Set working directory in the container
 WORKDIR /usr/src/app
 
-COPY package.json ./package.json
+COPY package*.json ./
 RUN npm install
 RUN npm install -g tsx
 
 COPY prisma/ ./prisma/
-COPY index.ts ./
+COPY index.ts ./index.ts
 
 RUN npx prisma generate
 
