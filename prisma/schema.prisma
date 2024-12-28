@@ -14,7 +14,7 @@ datasource db {
   // directUrl = env("DIRECT_URL")
 }
 
-model Review {
+model review {
   id String @id @default(cuid())
   uniqueProfileURL String @unique
   profilePicture String?
@@ -22,13 +22,13 @@ model Review {
   ratingNumber Int
   comment String?
 
-  photosAttached ReviewAttachedPhoto[]
+  photosAttached reviewAttachedPhoto[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-model ReviewAttachedPhoto {
+model reviewAttachedPhoto {
   id String @id @default(cuid())
   reviewId String?
   url String?
@@ -36,5 +36,5 @@ model ReviewAttachedPhoto {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  review Review? @relation(fields: [reviewId], references: [id])
+  review review? @relation(fields: [reviewId], references: [id])
 }
