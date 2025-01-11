@@ -33,16 +33,8 @@ RUN npm install
 RUN npm install -g tsx
 
 COPY prisma/ ./prisma/
-COPY index.ts ./index.ts
+COPY src/ ./src/ 
 
 RUN npx prisma generate
 
-# Set the default command to run the scraper
-# CMD ["npm", "start"]
-
-# Create a cron job file to schedule the web scraper
-COPY set-cron.sh ./
-RUN chmod +x /usr/src/app/set-cron.sh
-
-# Run the cron daemon and the web scraper script
-ENTRYPOINT bash -c "/usr/src/app/set-cron.sh && cron -f"
+CMD tsx src/index.ts >> logs.txt 2>&1

@@ -6,7 +6,13 @@
     "@prisma/client": "^6.0.0",
     "@sparticuz/chromium": "^131.0.1",
     "dotenv": "^16.4.5",
+    "node-cron": "^3.0.3",
+    "nodemailer": "^6.9.16",
     "prisma": "^6.0.1",
-    "puppeteer-core": "^23.10.0"
+    "puppeteer-core": "^23.11.1"
+  },
+  "devDependencies": {
+    "@types/node-cron": "^3.0.11",
+    "@types/nodemailer": "^6.4.17"
   }
 }

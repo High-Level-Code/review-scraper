@@ -1,5 +1,8 @@
+NAME=review-scraper
+SOURCE=ghcr.io/high-level-code/$(NAME)
+
 all: 
-	tsx index.ts
+	tsx src/index.ts
 
 db: 
 	docker compose up -d
@@ -15,3 +18,10 @@ start:
 
 bs:
 	make build && make start
+
+push:
+	docker tag review-scraper $(SOURCE)
+	docker push $(SOURCE)
+
+exe: 
+	docker exec -it review-scraper bash
